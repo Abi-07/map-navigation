@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>Map Navigation</title>
+
+    <style>
+	/* a[href^="http://maps.google.com/maps"]{display:none !important} */
+  /* a[href^="https://maps.google.com/maps"]{display:none !important} */
+  div[title^="Show street map"]{display:none !important}
+  div[role^="button"]{display:none !important}
+  /*.gmnoprint a, .gmnoprint span, .gm-style-cc {
+    display:none;
+}*/
+ul.navbar-nav.mr-auto {
+	margin: 0 auto;
+}
+.btn.focus, .btn:focus {
+    outline: 0;
+    box-shadow: none !important;
+}
+button
+.gmnoprint div {
+    background:none !important;
+}
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial;
+        font-size: 14px;
+      }
+	  #map-container {
+		width: 100%;
+		height: 100vh;
+	  }
+	  .col-sm-10 {
+		height: 100vh;
+	  }
+      #map {
+			width: 100%;
+			height: 100vh;
+/*			filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale");
+					filter: gray;
+					-webkit-filter: grayscale(99%);
+					-webkit-backface-visibility: hidden; */
+        }
+      #markerlist {
+        height: 400px;
+        margin: 10px 5px 0 10px;
+        overflow: auto;
+      }
+      .title {
+        border-bottom: 1px solid #e0ecff;
+        overflow: hidden;
+        width: 256px;
+        cursor: pointer;
+        padding: 2px 0;
+        display: block;
+        color: #000;
+        text-decoration: none;
+      }
+      .title:visited {
+        color: #000;
+      }
+      .title:hover {
+        background: #e0ecff;
+      }
+      #timetaken {
+        color: #f00;
+      }
+      .info {
+        width: 200px;
+      }
+      .info img {
+        border: 0;
+      }
+      .info-body {
+        width: 200px;
+        height: 200px;
+        line-height: 200px;
+        margin: 2px 0;
+        text-align: center;
+        overflow: hidden;
+      }
+      .info-img {
+        height: 220px;
+        width: 200px;
+      }
+	  #markerlistx>ul, #markerlist2>ul, #markerlist3>ul,#markerlist4>ul {
+			padding: 2%;
+		}
+	  li.title {
+		width: 100%;
+	  }
+	  @media (max-width: 678px) {
+		ul#myUL {
+			left: -16% !important;
+		}
+		.col-sm-2 {
+			text-align: center;
+		}
+		div#navbarSupportedContent, .dropdown-menu.show {
+			text-align: center;
+		}
+	  }
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	
+	<script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="data/mydata.json"></script>
+    <script src="js/mapnavigate.js"></script>
+
+    <script>
+      google.maps.event.addDomListener(window, 'load', speedTest.init);
+    </script>
+  </head>
+
+  <body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Map navigation</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">About</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Cities
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" onClick="bangalore();" href="#">Bangalore</a>
+          <a class="dropdown-item" onClick="mumbai();" href="#">Mumbai</a>
+          <a class="dropdown-item" onClick="delhi();" href="#">Delhi</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Contact</a>
+      </li>
+    </ul>
+<!--    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form> -->
+  </div>
+</nav>
+
+  <div class="container-fluid">
+	<div class="row">
+		<div class="col-sm-2">
+		    <div id="panel">
+				<h3 style="font-size: 22px; font-weight: 700;">Map Navigation</h3>
+				<strong>Venue List</strong>
+	<!--			<input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search venue" title="Type in a name">  -->
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="btn-group">
+								<a style="color: #b62025;" class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+								  Museum/Gallery
+								  <span class="caret"></span>
+								</a>
+								<ul id="myUL" class="dropdown-menu">
+								  <div id="markerlistx"></div>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="btn-group">
+								<a style="color: #b62025;" class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+								  Performance Space
+								  <span class="caret"></span>
+								</a>
+								<ul id="myUL" class="dropdown-menu">
+								  <div id="markerlist2"></div>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="btn-group">
+								<a style="color: #b62025;" class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+								  Category3
+								  <span class="caret"></span>
+								</a>
+								<ul id="myUL" class="dropdown-menu">
+								  <div id="markerlist3"></div>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="btn-group">
+								<a style="color: #b62025;" class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+								  Category4
+								  <span class="caret"></span>
+								</a>
+								<ul id="myUL" class="dropdown-menu">
+								  <div id="markerlist4"></div>
+								</ul>
+							</div>
+						</div>
+					</div>
+			  <!-- <button onclick="myFunction()">Category1</button> -->
+			</div>
+		</div>
+		<div class="col-sm-10">
+			<div id="map-container">
+				<div id="map"></div>
+			</div>
+		</div>
+	</div>
+  </div>
+	<script
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE">
+    </script>
+  </body>
+</html>
